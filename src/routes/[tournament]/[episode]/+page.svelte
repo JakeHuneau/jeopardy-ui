@@ -2,20 +2,21 @@
 	import Category from './Category.svelte';
 	import FinalJeopardy from './FinalJeopardy.svelte';
 
-	export let data;
-	let mode = 0; // 0 = single jeopardy, 1 = double jeopardy, 2 = Final jeopardy
-	let startIndex = 0;
-	let endIndex = 6;
+	let { data } = $props();
+	
+	let mode = $state(0); // 0 = single jeopardy, 1 = double jeopardy, 2 = Final jeopardy
+	let startIndex = $state(0);
+	let endIndex = $state(6);
 
 	// Reactive statement to update the categories to display based on startIndex and endIndex
-	$: displayedCategories = data.episode.categories.slice(startIndex, endIndex);
+	let displayedCategories = $derived(data.episode.categories.slice(startIndex, endIndex));
 
 	function switchMode() {
-		if (mode == 0) {
+		if (mode === 0) {
 			mode = 1;
 			startIndex = 6;
 			endIndex = 12;
-		} else if (mode == 1) {
+		} else if (mode === 1) {
 			mode = 2;
 			startIndex = 0;
 			endIndex = 6;
@@ -24,19 +25,19 @@
 		}
 		console.log(`${mode}, ${startIndex}, ${endIndex}`);
 	}
+
+	let buttonText = $derived(
+		mode === 0 ? 'Double Jeopardy' :
+		mode === 1 ? 'Final Jeopardy' :
+		'Single Jeopardy'
+	);
 </script>
 
 <div class="page">
 	<div class="header">
 		<p>{data.episode.info.title} -- {data.episode.info.comment}</p>
-		<button on:click={switchMode}>
-			{#if mode == 0}
-				Double Jeopardy
-			{:else if mode == 1}
-				Final Jeopardy
-			{:else}
-				Single Jeopardy
-			{/if}
+		<button onclick={switchMode}>
+			{buttonText}
 		</button>
 	</div>
 	{#if mode < 2}
@@ -72,13 +73,13 @@
 	}
 
 	p {
-		text-align: center; /* Ensures text within the <p> is centered */
-		width: 100%; /* Makes the <p> take the full width of the container */
+		text-align: center;
+		width: 100%;
 	}
 
 	.categories {
 		display: grid;
-		grid-template-columns: repeat(6, 1fr); /* Adjust the number of columns as needed */
-		gap: 10px; /* Space between columns */
+		grid-template-columns: repeat(6, 1fr);
+		gap: 10px;
 	}
 </style>

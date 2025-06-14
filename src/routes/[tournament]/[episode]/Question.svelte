@@ -1,31 +1,30 @@
 <script>
-	export let price;
-	export let question;
-	export let answer;
-	export let showAnswer = false;
-	let mode = 0; // 0 = price, 1 = question, 2 = blank, 3 = daily double
+	let { price, question, answer, showAnswer = false } = $props();
+	
+	let mode = $state(0); // 0 = price, 1 = question, 2 = blank, 3 = daily double
 
-	$: textColor = mode == 0 || mode == 3 ? 'gold' : 'white';
+	let textColor = $derived(mode === 0 || mode === 3 ? 'gold' : 'white');
 
-	$: if (price) {
-		// Reset mode when new questions come
-		mode = 0;
-	}
+	$effect(() => {
+		if (price) {
+			// Reset mode when new questions come
+			mode = 0;
+		}
+	});
 
 	function switchMode() {
-		if (mode == 0) {
-			if (Math.floor(Math.random() * 15) == 0) {
+		if (mode === 0) {
+			if (Math.floor(Math.random() * 15) === 0) {
 				// 1/15 of DD
-				var audio = new Audio('/daily_double.mp3');
+				const audio = new Audio('/daily_double.mp3');
 				audio.play();
-
 				mode = 3;
 			} else {
 				mode = 1;
 			}
-		} else if (mode == 1) {
+		} else if (mode === 1) {
 			mode = 2;
-		} else if (mode == 3) {
+		} else if (mode === 3) {
 			mode = 1;
 		} else {
 			// Switch back to price
@@ -47,15 +46,15 @@
 	<button
 		class="question {mode === 1 || mode === 3 ? 'full-screen' : ''}"
 		style="color: {textColor}"
-		on:click={switchMode}
+		onclick={switchMode}
 	>
-		{#if mode == 0}
+		{#if mode === 0}
 			${price}
-		{:else if mode == 1}
+		{:else if mode === 1}
 			<div class="active">
 				{question}
 			</div>
-		{:else if mode == 3}
+		{:else if mode === 3}
 			<div class="active">DAILY DOUBLE</div>
 		{:else}
 			<br />

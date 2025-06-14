@@ -1,9 +1,7 @@
 <script>
 	import Question from './Question.svelte';
-	export let categoryName;
-	export let questions;
-	export let isDouble = 0;
-	export let showAnswer = false;
+	
+	let { categoryName, questions, isDouble = 0, showAnswer = false } = $props();
 </script>
 
 <div class="category">
@@ -27,20 +25,20 @@
 	}
 
 	.title {
-		text-align: center; /* Ensures text within the <p> is centered */
+		text-align: center;
 		background-color: blue;
 		color: white;
 		height: 3rem;
-		width: 100%; /* Makes the <p> take the full width of the container */
+		width: 100%;
 		display: flex;
-		align-items: center; /* Centers the text vertically */
-		justify-content: center; /* Optional: Centers the text horizontally */
+		align-items: center;
+		justify-content: center;
 	}
 
 	.questions {
 		display: grid;
-		grid-template-rows: repeat(5, 1fr); /* Adjust the number of rows as needed */
-		gap: 10px; /* Space between columns */
+		grid-template-rows: repeat(5, 1fr);
+		gap: 10px;
 		width: 100%;
 	}
 </style>

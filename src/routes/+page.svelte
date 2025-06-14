@@ -1,17 +1,12 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 
 	let tournaments = ['all', 'college', 'teens', 'celebrity'];
-	let selectedTournament = tournaments[0];
-
-	let episodes = [];
-	let episodeNumber = 1;
+	let selectedTournament = $state(tournaments[0]);
+	let episodes = $state([]);
+	let episodeNumber = $state(1);
 
 	// Function to load the appropriate JSON file based on the selected tournament
-	/**
-	 * @param {string} tournament
-	 */
 	async function loadTournament(tournament) {
 		try {
 			const response = await fetch(`episodes/${tournament}.json`);
@@ -25,15 +20,20 @@
 		}
 	}
 
-	onMount(() => {
+	// Initialize on mount
+	$effect(() => {
 		loadTournament(selectedTournament);
 	});
 
 	// Watch for changes to the selectedTournament and load the new data
-	$: if (selectedTournament) {
-		loadTournament(selectedTournament);
-		episodeNumber = 1;
-	}
+	$effect(() => {
+		if (selectedTournament) {
+			loadTournament(selectedTournament);
+			episodeNumber = 1;
+		}
+	});
+
+	let selectedEpisode = $derived(episodes.length ? episodes[episodeNumber - 1] : null);
 </script>
 
 <main>
@@ -51,10 +51,10 @@
 			<option value={i + 1}>{i + 1}</option>
 		{/each}
 	</select>
-	{#if episodes.length}
-		<p>Episode Title: {episodes[episodeNumber - 1].info.title}</p>
+	{#if selectedEpisode}
+		<p>Episode Title: {selectedEpisode.info.title}</p>
 	{/if}
-	<button on:click={() => goto(`/${selectedTournament}/${episodeNumber}`)}> PLAY </button>
+	<button onclick={() => goto(`/${selectedTournament}/${episodeNumber}`)}> PLAY </button>
 </main>
 
 <style>
